@@ -55,4 +55,20 @@ contract('Tokun', function(accounts){
 			assert.equal(balance.toNumber(),200000,'token transfer success');
 		});
 	});
+
+	it('Approves tokens for delegated transfers',function(){
+		return Tokun.deployed().then(function(instance){
+			tokenInstance = instance;
+			return tokenInstance.approve.call(accounts[1],100)
+		}).then(function(success){
+			assert.equal(success,true,'It returns true');
+			return tokenInstance.approve(accounts[1],100);
+		}).then(function(receipt){
+			assert.equal(receipt.logs[0].event,'Approval','Event must be an "Approval" event');
+			assert.equal(receipt.logs[0].args._owner,accounts[0],'logs the owner account');
+			assert.equal(receipt.logs[0].args._spender,accounts[1],'logs the account ie authorized to spend');
+			assert.equal(receipt.logs[0].args._value,100,'logs the no of tokens spent');
+		});
+	});
+
 })
